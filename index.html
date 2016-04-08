@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+	<style>
+		body{
+			background-color: black;
+		}
+		#content{
+			color: white;
+			font-family: "Comic Sans MS";
+			font-size: 90px;
+			height: 30px;
+			position: fixed;
+			top: 50%;
+			left: 50%;
+			/* bring your own prefixes */
+			-ms-transform: translate(-50%, -80px);
+			-webkit-transform: translate(-50%, -80px);
+			transform: translate(-50%, -80px);
+		}
+	</style>
+	<script src="javascript/jquery.js"></script>
+
+	<!-- DOCUMENT STARTS HERE -->
+	<head>
+		<title>Randomizer</title>
+	</head>
+	<body>
+		<div id="content">
+			<span id="text_stuff"></span>
+		</div>
+	</body>
+	<!-- DOCUMENT ENDS HERE -->
+
+	<script>
+	var my_timer;
+	var timer_is_running = true;
+	var elements = ["Nazareth", "Jerusalem", "Bethlehem"];
+	var counter = 0;
+	var clock_tick = document.createElement('audio');
+	var sound_effect = document.createElement('audio');
+	clock_tick.preload = "auto";
+	sound_effect.preload = "auto";
+	clock_tick.setAttribute("src", "sounds/clock_tick.mp3");
+	sound_effect.setAttribute("src", "sounds/bomb.mp3");
+	var explosion_html = "<img src=\"images/explosion.gif\" alt=\"Explosion\" class=\"explosion_image\"";
+
+	clock_tick.loop = true;
+
+	function start() {
+		clock_tick.currentTime = 1;
+		clock_tick.play();
+		my_timer = setInterval(function(){
+			$("#text_stuff").text(elements[counter]);
+			counter++;
+			if (counter == elements.length) {
+				counter = 0;
+			}
+		}, 100);
+	}
+
+	function execute() {
+		if (timer_is_running) {
+			clearTimeout(my_timer);
+			if (elements.length > 20) { //get a random element if elements.length > 20
+				var rand_num = Math.round(Math.random() * elements.length);
+				$("#text_stuff").text(elements[rand_num]);
+			}
+			//stop clock tick sound
+			clock_tick.pause();
+			clock_tick.currentTime = 1;
+
+			//start the sound effect
+			sound_effect.currentTime = 0.65;
+			sound_effect.play();
+			timer_is_running = false;
+
+			// var the_height = $(document).height() * (5 / 7);
+			// var the_width = $(document).width() * (5 / 7);
+
+			// var rand_num = Math.round(Math.random() * 3) + 1; //between 1-4 explosions
+
+			/*
+			setTimeout(function(){
+			for (var i = 0; i < rand_num; i++) {
+			$("body").prepend(explosion_html + "style=\"position: fixed; top: " + (Math.random() * the_height)
+			+ "px; left: " + (Math.random() * the_width) + "px;\"/ >");
+			}
+			setTimeout(function(){
+				$(".explosion_image").hide(); //hides the image from user
+				$(".explosion_image").attr("src", ""); //change the src to another file
+				$(".explosion_image").remove(); //remove element
+				}, 2800);
+			}, 3200);
+			*/
+
+			setTimeout(function(){
+				$("body").css({
+					"background-image": "url(images/explosion.gif)",
+					"background-size": "cover",
+					"background-repeat": "no-repeat"
+				});
+				$("#content").css("color", "black");
+				setTimeout(function(){
+					$("body").css("background", "");
+					$("#content").css("color", "");
+				}, 2800);
+			}, 3200);
+
+		} else {
+			timer_is_running = true;
+			start();
+		}
+	}
+
+	$(document).keypress(function(e){
+		e.preventDefault();
+		if (e.keyCode == 32) {
+			execute();
+		}
+	});
+
+	$(document).ready(start);
+	</script>
+</html>
